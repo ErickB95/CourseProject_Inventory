@@ -33,7 +33,7 @@ public class Inventory {
 		char input = ' ';
 
 		do {
-			// Display menu
+			// Display menu choices
 			System.out.println("Please make a selection.");
 			System.out.println("===============");
 			System.out.println("Enter v to view all products.");
