@@ -94,8 +94,6 @@ public class Inventory {
 			}
 
 		} while (input != 'q');
-
-		System.out.println("Thank you for using the system.");
 	}
 
 	/**
@@ -105,18 +103,23 @@ public class Inventory {
 	 * 
 	 */
 	public void addProduct(Product product) {
-//		try {
-//			Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/inventory", "root",
-//					"TasunaG1234!@#$");
-//			PreparedStatement ps = connect.prepareStatement(
-//					"insert into products (productName, productType, dateArrived, dateExpired, quantity) values ('"
-//							+ product.getpName() + "', '" + product.getpType() + "', '" + "2023-05-28" + "', '"
-//							+ "2024-05-28" + "', " + product.getQuantity());
-//
-//			ps.execute();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/inventory", "root",
+					"TasunaG1234!@#$");
+			PreparedStatement ps = connect
+					.prepareStatement("insert into products (productName, productType, quantity) values (?, ?, ?)");
+
+			ps.setString(1, product.getpName());
+			ps.setString(2, product.getpType());
+//			ps.setString(3, "2023-06-03");
+//			ps.setString(4, "2024-06-03");
+			ps.setInt(5, product.getQuantity());
+			ps.executeUpdate();
+
+			System.out.println("Product added to the database.");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
 	}
 
