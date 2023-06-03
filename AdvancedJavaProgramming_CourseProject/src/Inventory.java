@@ -37,8 +37,10 @@ public class Inventory {
 			System.out.println("Please make a selection.");
 			System.out.println("===============");
 			System.out.println("Enter v to view all products.");
-			System.out.println("Enter p to view product by name.");
+			System.out.println("Enter p to view products by name.");
+			System.out.println("Enter t to view products by type.");
 			System.out.println("Enter a to add a product.");
+			System.out.println("Enter u to view unstocked products.");
 			System.out.println("Enter q to quit the application.");
 			System.out.println("===============");
 
@@ -66,7 +68,15 @@ public class Inventory {
 
 				logger.log(Level.INFO, "Now viewing product: " + pName);
 				getProductByName(pName);
+				System.out.println();
+			} else if (input == 't') {
+				// View product by type
+				System.out.println("Enter the product type.");
+				String pType = sc.next();
+				System.out.println();
 
+				getProductByType(pType);
+				System.out.println();
 			} else if (input == 'a') {
 				// Add a product
 				System.out.println("Add a product");
@@ -81,7 +91,14 @@ public class Inventory {
 				System.out.println("How many are there?");
 				int quantity = sc.nextInt();
 
-				addProduct(new Product(productName, productType, quantity));
+				System.out.println("What is the price of the product? (Include decimals.)");
+				double price = sc.nextDouble();
+
+				addProduct(new Product(productName, productType, quantity, price));
+				System.out.println();
+			} else if (input == 'u') {
+				// Display unstocked products
+				getUnstockedProducts();
 				System.out.println();
 			} else if (input == 'q') {
 				// Close application
@@ -94,8 +111,6 @@ public class Inventory {
 			}
 
 		} while (input != 'q');
-
-		System.out.println("Thank you for using the system.");
 	}
 
 	/**
@@ -105,18 +120,22 @@ public class Inventory {
 	 * 
 	 */
 	public void addProduct(Product product) {
-//		try {
-//			Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/inventory", "root",
-//					"TasunaG1234!@#$");
-//			PreparedStatement ps = connect.prepareStatement(
-//					"insert into products (productName, productType, dateArrived, dateExpired, quantity) values ('"
-//							+ product.getpName() + "', '" + product.getpType() + "', '" + "2023-05-28" + "', '"
-//							+ "2024-05-28" + "', " + product.getQuantity());
-//
-//			ps.execute();
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
+		try {
+			Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/inventory", "root",
+					"TasunaG1234!@#$");
+			PreparedStatement ps = connect.prepareStatement(
+					"insert into products (productName, productType, quantity, productPrice) values (?, ?, ?, ?)");
+
+			ps.setString(1, product.getpName());
+			ps.setString(2, product.getpType());
+			ps.setInt(3, product.getQuantity());
+			ps.setDouble(4, product.getPrice());
+			ps.executeUpdate();
+
+			System.out.println("Product added: " + product.toString());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -131,8 +150,7 @@ public class Inventory {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {
-				System.out.println(rs.getString("productID") + ". " + rs.getString("productName") + "("
-						+ rs.getString("productType") + ")" + " : " + rs.getInt("quantity"));
+				getProductData(rs);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -154,8 +172,41 @@ public class Inventory {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {
-				System.out.println(rs.getString("productID") + ". " + rs.getString("productName") + "("
-						+ rs.getString("productType") + ")" + " : " + rs.getInt("quantity"));
+				getProductData(rs);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Displays unstocked products from the database.
+	 */
+	public void getUnstockedProducts() {
+		try {
+			Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/inventory", "root",
+					"TasunaG1234!@#$");
+			PreparedStatement ps = connect.prepareStatement("Select * from products Where quantity = 0");
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				getProductData(rs);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void getProductByType(String type) {
+		try {
+			Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/inventory", "root",
+					"TasunaG1234!@#$");
+			PreparedStatement ps = connect
+					.prepareStatement("Select * from products Where productType = '" + type + "'");
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				getProductData(rs);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -183,6 +234,16 @@ public class Inventory {
 
 		return logger;
 
+	}
+
+	public void getProductData(ResultSet rs) {
+		try {
+			System.out.println(
+					rs.getString("productID") + ". " + rs.getString("productName") + "(" + rs.getString("productType")
+							+ ")" + " | #" + rs.getInt("quantity") + " | $" + rs.getDouble("productPrice"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
