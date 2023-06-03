@@ -7,15 +7,13 @@ public class Product {
 	String pName;
 	String pType;
 	int quantity;
-	LocalDateTime dateArrived;
-	LocalDateTime dateExpired;
+	double price;
 
-	Product(String pName, String pType, int quantity) {
+	Product(String pName, String pType, int quantity, double price) {
 		this.pName = pName;
 		this.pType = pType;
 		this.quantity = quantity;
-		this.dateArrived = LocalDateTime.now();
-		this.dateExpired = LocalDateTime.now().plusHours(8760);
+		this.price = price;
 	}
 
 	public String getpName() {
@@ -42,9 +40,22 @@ public class Product {
 		this.quantity = quantity;
 	}
 
+	public double getPrice() {
+		return price;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	@Override
+	public String toString() {
+		return "Product [pName=" + pName + ", pType=" + pType + ", quantity=" + quantity + ", price=" + price + "]";
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(dateArrived, dateExpired, pName, pType, quantity);
+		return Objects.hash(pName, pType, price, quantity);
 	}
 
 	@Override
@@ -56,15 +67,8 @@ public class Product {
 		if (getClass() != obj.getClass())
 			return false;
 		Product other = (Product) obj;
-		return Objects.equals(dateArrived, other.dateArrived) && Objects.equals(dateExpired, other.dateExpired)
-				&& Objects.equals(pName, other.pName) && Objects.equals(pType, other.pType)
-				&& quantity == other.quantity;
-	}
-
-	@Override
-	public String toString() {
-		return "Product [pName=" + pName + ", pType=" + pType + ", quantity=" + quantity + ", dateArrived="
-				+ dateArrived + ", dateExpired=" + dateExpired + "]";
+		return Objects.equals(pName, other.pName) && Objects.equals(pType, other.pType)
+				&& Double.doubleToLongBits(price) == Double.doubleToLongBits(other.price) && quantity == other.quantity;
 	}
 
 }

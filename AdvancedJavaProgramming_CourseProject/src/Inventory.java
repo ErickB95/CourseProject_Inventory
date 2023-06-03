@@ -81,7 +81,10 @@ public class Inventory {
 				System.out.println("How many are there?");
 				int quantity = sc.nextInt();
 
-				addProduct(new Product(productName, productType, quantity));
+				System.out.println("What is the price of the product? (Include decimals.)");
+				double price = sc.nextDouble();
+
+				addProduct(new Product(productName, productType, quantity, price));
 				System.out.println();
 			} else if (input == 'q') {
 				// Close application
@@ -106,17 +109,16 @@ public class Inventory {
 		try {
 			Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/inventory", "root",
 					"TasunaG1234!@#$");
-			PreparedStatement ps = connect
-					.prepareStatement("insert into products (productName, productType, quantity) values (?, ?, ?)");
+			PreparedStatement ps = connect.prepareStatement(
+					"insert into products (productName, productType, quantity, productPrice) values (?, ?, ?, ?)");
 
 			ps.setString(1, product.getpName());
 			ps.setString(2, product.getpType());
-//			ps.setString(3, "2023-06-03");
-//			ps.setString(4, "2024-06-03");
-			ps.setInt(5, product.getQuantity());
+			ps.setInt(3, product.getQuantity());
+			ps.setDouble(4, product.getPrice());
 			ps.executeUpdate();
 
-			System.out.println("Product added to the database.");
+			System.out.println("Product added: " + product.toString());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
