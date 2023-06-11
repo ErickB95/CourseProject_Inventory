@@ -35,14 +35,15 @@ public class Inventory {
 		do {
 			// Display menu
 			System.out.println("Please make a selection.");
-			System.out.println("===============");
+			System.out.println("========================");
 			System.out.println("Enter v to view all products.");
 			System.out.println("Enter p to view products by name.");
 			System.out.println("Enter t to view products by type.");
 			System.out.println("Enter a to add a product.");
 			System.out.println("Enter u to view unstocked products.");
+			System.out.println("Enter d to delete a product.");
 			System.out.println("Enter q to quit the application.");
-			System.out.println("===============");
+			System.out.println("========================");
 
 			// get input from user
 			Scanner sc = new Scanner(System.in);
@@ -54,14 +55,14 @@ public class Inventory {
 			if (input == 'v') {
 				// View All Products
 				System.out.println("View All Products");
-				System.out.println("===============");
+				System.out.println("=================");
 				logger.log(Level.INFO, "Now viewing all products");
 				viewAllProducts();
 				System.out.println();
 			} else if (input == 'p') {
 				// View product by name
 				System.out.println("View Product By Name");
-				System.out.println("===============");
+				System.out.println("====================");
 				System.out.println("What is the name of the product your looking for?");
 				String pName = sc.next();
 				System.out.println();
@@ -71,6 +72,8 @@ public class Inventory {
 				System.out.println();
 			} else if (input == 't') {
 				// View product by type
+				System.out.println("View Product by Type");
+				System.out.println("====================");
 				System.out.println("Enter the product type.");
 				String pType = sc.next();
 				System.out.println();
@@ -80,7 +83,7 @@ public class Inventory {
 			} else if (input == 'a') {
 				// Add a product
 				System.out.println("Add a product");
-				System.out.println("===============");
+				System.out.println("=============");
 
 				System.out.println("What is the name of the product?");
 				String productName = sc.next();
@@ -98,7 +101,24 @@ public class Inventory {
 				System.out.println();
 			} else if (input == 'u') {
 				// Display unstocked products
+				System.out.println("Unstocked Products");
+				System.out.println("==================");
 				getUnstockedProducts();
+				System.out.println();
+			} else if (input == 'd') {
+				// Delete product
+				System.out.println("Delete Product");
+				System.out.println("==============");
+				System.out.println("Enter the id of the product to delete.");
+				int id = 0;
+
+				do {
+					id = sc.nextInt();
+					if (id <= 0)
+						System.out.println("Invalid Input: Number must be higher than 0. Try again.");
+				} while (id <= 0);
+
+				deleteProductByID(id);
 				System.out.println();
 			} else if (input == 'q') {
 				// Close application
@@ -136,7 +156,6 @@ public class Inventory {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
@@ -197,6 +216,11 @@ public class Inventory {
 		}
 	}
 
+	/**
+	 * Get product by name from the database.
+	 * 
+	 * @param type
+	 */
 	public void getProductByType(String type) {
 		try {
 			Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/inventory", "root",
@@ -213,6 +237,33 @@ public class Inventory {
 		}
 	}
 
+	/**
+	 * Delete a product from the database that matches the ID passed.
+	 * 
+	 * @param id
+	 */
+	public void deleteProductByID(int id) {
+		try {
+			Connection connect = DriverManager.getConnection("jdbc:mysql://localhost:3306/inventory", "root",
+					"TasunaG1234!@#$");
+			PreparedStatement ps = connect.prepareStatement("delete from products where productID = ?");
+
+			ps.setInt(1, id);
+			ps.executeUpdate();
+
+			System.out.println("Product Deleted.");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Configures the logger level, handler, and formatter. Also creates the file
+	 * where the data will be stored
+	 * 
+	 * @param logger
+	 * @return Configured Logger Object
+	 */
 	public Logger configLogger(Logger logger) {
 		try {
 			LogManager.getLogManager()
@@ -236,6 +287,11 @@ public class Inventory {
 
 	}
 
+	/**
+	 * Default display of Product Data.
+	 * 
+	 * @param rs
+	 */
 	public void getProductData(ResultSet rs) {
 		try {
 			System.out.println(
