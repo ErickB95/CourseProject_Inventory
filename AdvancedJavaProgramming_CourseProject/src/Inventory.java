@@ -296,7 +296,7 @@ public class Inventory {
 		try {
 			System.out.println(
 					rs.getString("productID") + ". " + rs.getString("productName") + "(" + rs.getString("productType")
-							+ ")" + " | Qyt: #" + rs.getInt("quantity") + " | Price: $" + rs.getDouble("productPrice"));
+							+ ")" + " | Qty: #" + rs.getInt("quantity") + " | Price: $" + rs.getDouble("productPrice"));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
