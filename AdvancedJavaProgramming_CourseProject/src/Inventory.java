@@ -178,7 +178,7 @@ public class Inventory {
 	}
 
 	/**
-	 * Get product by name
+	 * Get product by name.
 	 * 
 	 * @param productName
 	 */
